@@ -5,26 +5,28 @@ import java.util.Scanner;
 
 class TaquinSolveur {
     public int[] SolRec(Plateau p, List<Plateau> dejaVisites) {
+        /* BUT DE LA METHODE ?? */
+    }
 
     public int[] SolRec(Plateau p) {// Renvoie un tableau de 2 entiers, le premier est le nombre de mouvements, le deuxième est le nombre de noeuds explorés
         if (p.estResolu()) {
             p.affichePlateau();
-            return new int[] { 0, 0 };
+            return new int[]{0, 0};
         }
 
         // Vérifier si l'état actuel a déjà été visité
         for (Plateau plat : dejaVisites) {
             if (plat.equals(p)) {
-                return new int[] { Integer.MAX_VALUE, Integer.MAX_VALUE };
+                return new int[]{Integer.MAX_VALUE, Integer.MAX_VALUE};
             }
         }
 
         int noueds_a_par = p.nombreDepossibilites();
 
-        int[] tab1 = { Integer.MAX_VALUE, Integer.MAX_VALUE };
-        int[] tab2 = { Integer.MAX_VALUE, Integer.MAX_VALUE };
-        int[] tab3 = { Integer.MAX_VALUE, Integer.MAX_VALUE };
-        int[] tab4 = { Integer.MAX_VALUE, Integer.MAX_VALUE };
+        int[] tab1 = {Integer.MAX_VALUE, Integer.MAX_VALUE};
+        int[] tab2 = {Integer.MAX_VALUE, Integer.MAX_VALUE};
+        int[] tab3 = {Integer.MAX_VALUE, Integer.MAX_VALUE};
+        int[] tab4 = {Integer.MAX_VALUE, Integer.MAX_VALUE};
 
         Plateau meilleurPlateau = null;
 
@@ -34,7 +36,7 @@ class TaquinSolveur {
         Plateau p1 = null, p2 = null, p3 = null, p4 = null;
 
         for (int i = 0; i < 4; i++) {
-            int[] res = { Integer.MAX_VALUE, Integer.MAX_VALUE };
+            int[] res = {Integer.MAX_VALUE, Integer.MAX_VALUE};
 
             switch (i) {
                 case 0:
@@ -77,8 +79,8 @@ class TaquinSolveur {
         }
 
         // Trouver le minimum en fonction du nombre de mouvements
-        int[][] options = { tab1, tab2, tab3, tab4 };
-        Plateau[] plateaux = { p1, p2, p3, p4 };
+        int[][] options = {tab1, tab2, tab3, tab4};
+        Plateau[] plateaux = {p1, p2, p3, p4};
 
         int[] minTab = options[0];
         meilleurPlateau = plateaux[0];
@@ -98,7 +100,9 @@ class TaquinSolveur {
         return minTab;
     }
 
-    public static void main(String[] args) {
+
+    /*A ENLEVER OU METTRE DANS LE MAIN PRINCIPAL*/
+   /* public static void main(String[] args) {
         Plateau plateau = new Plateau("Taquin_tests/sp000.txt");
         plateau.affichePlateau();
         List<Plateau> dejaVisites = new ArrayList<>();
@@ -106,7 +110,7 @@ class TaquinSolveur {
         solveur.SolRec(plateau, dejaVisites);
         plateau.affichePlateau();
 
-    }
+    }*/
 
     public void solSE(Plateau p) {
         long debut = System.currentTimeMillis();
@@ -237,6 +241,7 @@ class TaquinSolveur {
         }
         writer.write("=============================\n");
     }
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         String cheminFichier = "Taquin_tests/sp000.txt";
