@@ -10,9 +10,26 @@ class Plateau {
     public int x0, y0, size;
 
     public Plateau(Plateau p) {
-        this.plateauInitial = p.plateauInitial;
-        this.plateauActuel = p.plateauActuel;
-        this.plateauFinal = p.plateauFinal;
+        // Copie profonde des tableaux bidimensionnels
+        this.plateauInitial = new int[p.plateauInitial.length][];
+        for (int i = 0; i < p.plateauInitial.length; i++) {
+            this.plateauInitial[i] = new int[p.plateauInitial[i].length];
+            System.arraycopy(p.plateauInitial[i], 0, this.plateauInitial[i], 0, p.plateauInitial[i].length);
+        }
+
+        this.plateauActuel = new int[p.plateauActuel.length][];
+        for (int i = 0; i < p.plateauActuel.length; i++) {
+            this.plateauActuel[i] = new int[p.plateauActuel[i].length];
+            System.arraycopy(p.plateauActuel[i], 0, this.plateauActuel[i], 0, p.plateauActuel[i].length);
+        }
+
+        this.plateauFinal = new int[p.plateauFinal.length][];
+        for (int i = 0; i < p.plateauFinal.length; i++) {
+            this.plateauFinal[i] = new int[p.plateauFinal[i].length];
+            System.arraycopy(p.plateauFinal[i], 0, this.plateauFinal[i], 0, p.plateauFinal[i].length);
+        }
+
+        // Copie des types primitifs
         this.x0 = p.x0;
         this.y0 = p.y0;
         this.size = p.size;
@@ -98,26 +115,26 @@ class Plateau {
     }
 
     public void dBas() {
-        if (x0 < size - 1) {
-            plateauActuel[x0][y0] = plateauActuel[x0 + 1][y0];
-            plateauActuel[x0 + 1][y0] = 0;
-            x0++;
+        if (this.x0 < this.size - 1) {
+            this.plateauActuel[this.x0][this.y0] = this.plateauActuel[this.x0 + 1][this.y0];
+            this.plateauActuel[this.x0 + 1][this.y0] = 0;
+            this.x0++;
         }
     }
 
     public void dGauche() {
-        if (y0 > 0) {
-            plateauActuel[x0][y0] = plateauActuel[x0][y0 - 1];
-            plateauActuel[x0][y0 - 1] = 0;
-            y0--;
+        if (this.y0 > 0) {
+            this.plateauActuel[this.x0][this.y0] = this.plateauActuel[this.x0][this.y0 - 1];
+            this.plateauActuel[this.x0][this.y0 - 1] = 0;
+            this.y0--;
         }
     }
 
     public void dDroite() {
-        if (y0 < size - 1) {
-            plateauActuel[x0][y0] = plateauActuel[x0][y0 + 1];
-            plateauActuel[x0][y0 + 1] = 0;
-            y0++;
+        if (this.y0 < this.size - 1) {
+            this.plateauActuel[this.x0][this.y0] = this.plateauActuel[this.x0][this.y0 + 1];
+            this.plateauActuel[this.x0][this.y0 + 1] = 0;
+            this.y0++;
         }
     }
 
