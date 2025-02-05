@@ -3,13 +3,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 class Plateau {
-    private int[][] plateauInitial;
-    private int[][] plateauActuel;
-    private int[][] plateauFinal;
+    public int[][] plateauInitial;
+    public int[][] plateauActuel;
+    public int[][] plateauFinal;
     private List<Integer> seqMin = new ArrayList<>();
-    private int x0, y0, size;
+    public int x0, y0, size;
     List<Integer> possibilites = new ArrayList<>();
-
 
     public Plateau(String fichier) {
         lireFichier(fichier);
@@ -22,6 +21,25 @@ class Plateau {
                 }
             }
         }
+    }
+
+    public Plateau(int[][] plateau, int x0, int y0, int[][] plateauFinal) {
+        this.size = plateau.length;
+        this.plateauActuel = new int[size][size];
+        for (int i = 0; i < size; i++) {
+            System.arraycopy(plateau[i], 0, this.plateauActuel[i], 0, size);
+        }
+        this.x0 = x0;
+        this.y0 = y0;
+        this.plateauFinal = plateauFinal;
+    }
+
+    public int[][] getPlateauActuel() {
+        return plateauActuel;
+    }
+
+    public int getSize() {
+        return size;
     }
 
     public void affichePlateau() {
@@ -43,58 +61,105 @@ class Plateau {
         for (int i = 0; i < this.plateauActuel.length; i++) {
             for (int j = 0; j < this.plateauActuel[i].length; j++) {
                 if (this.plateauActuel[i][j] != this.plateauFinal[i][j])
-                    return false; 
+                    return false;
             }
         }
         return true;
-
     }
-    public void dHaut(){
+
+    public void dHaut() {
         if (x0 > 0) {
             plateauActuel[x0][y0] = plateauActuel[x0 - 1][y0];
             plateauActuel[x0 - 1][y0] = 0;
             x0--;
         }
     }
-    public void dBas(){
+
+    public void dBas() {
         if (x0 < size - 1) {
             plateauActuel[x0][y0] = plateauActuel[x0 + 1][y0];
             plateauActuel[x0 + 1][y0] = 0;
             x0++;
         }
     }
-    public void dGauche(){
+
+    public void dGauche() {
         if (y0 > 0) {
-            plateauActuel[x0][y0] = plateauActuel[x0][y0 -1];
+            plateauActuel[x0][y0] = plateauActuel[x0][y0 - 1];
             plateauActuel[x0][y0 - 1] = 0;
             y0--;
         }
     }
-    public void dDroite(){
+
+    public void dDroite() {
         if (y0 < size - 1) {
-            plateauActuel[x0][y0] = plateauActuel[x0][y0 +1];
+            plateauActuel[x0][y0] = plateauActuel[x0][y0 + 1];
             plateauActuel[x0][y0 + 1] = 0;
             y0++;
         }
     }
 
-    public boolean peutAllerEnHaut(){
-        return x0>0;
+    public boolean peutAllerEnHaut() {
+        return x0 > 0;
     }
 
-    public boolean peutAllerEnBas(){
-        return x0<size -1;
+    public boolean peutAllerEnBas() {
+        return x0 < size - 1;
     }
 
-    public boolean peutAllerAGauche(){
-        return y0>0;
-    }
-    public boolean peutAllerADroite(){
-        return y0<size -1;
+    public boolean peutAllerAGauche() {
+        return y0 > 0;
     }
 
+    public boolean peutAllerADroite() {
+        return y0 < size - 1;
+    }
 
-    // Lire fichier dans ./Taquin_tests
+    public List<Plateau> genererEnfants() {
+        List<Plateau> enfants = new ArrayList<>();
+        if (peutAllerEnHaut()) enfants.add(copierPlateau(-1, 0));
+        if (peutAllerEnBas()) enfants.add(copierPlateau(1, 0));
+        if (peutAllerAGauche()) enfants.add(copierPlateau(0, -1));
+        if (peutAllerADroite()) enfants.add(copierPlateau(0, 1));
+        return enfants;
+    }
+
+    private Plateau copierPlateau(int dx, int dy) {
+        int[][] nouveauPlateau = new int[size][size];
+        for (int i = 0; i < size; i++) {
+            System.arraycopy(plateauActuel[i], 0, nouveauPlateau[i], 0, size);
+        }
+        int newX = x0 + dx;
+        int newY = y0 + dy;
+        nouveauPlateau[x0][y0] = nouveauPlateau[newX][newY];
+        nouveauPlateau[newX][newY] = 0;
+        return new Plateau(nouveauPlateau, newX, newY, plateauFinal);
+    }
+
+    public int nombreDepossibilites() {
+        int res = 0;
+        if (peutAllerAGauche()) res++;
+        if (peutAllerADroite()) res++;
+        if (peutAllerEnBas()) res++;
+        if (peutAllerEnHaut()) res++;
+        return res;
+    }
+
+    public int h() {
+        int distance = 0;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                int val = plateauActuel[i][j];
+                if (val != 0) {
+                    int targetX = (val - 1) / size;
+                    int targetY = (val - 1) % size;
+                    distance += Math.abs(i - targetX) + Math.abs(j - targetY);
+                }
+            }
+        }
+        return distance;
+    }
+
     public void lireFichier(String fichier) {
         try {
             File myObj = new File(fichier);
@@ -102,7 +167,7 @@ class Plateau {
             int i = 0;
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine().trim();
-                if (data.isEmpty()) continue; // Ignorer les lignes vides
+                if (data.isEmpty()) continue;
 
                 if (i == 0) {
                     size = Integer.parseInt(data);
@@ -110,19 +175,11 @@ class Plateau {
                     plateauFinal = new int[size][size];
                 } else if (i <= size) {
                     String[] str = data.split(" ");
-                    if (str.length != size) {
-                        System.out.println("Erreur : ligne incorrecte dans la configuration initiale.");
-                        continue;
-                    }
                     for (int j = 0; j < size; j++) {
                         plateauInitial[i - 1][j] = Integer.parseInt(str[j]);
                     }
                 } else {
                     String[] str = data.split(" ");
-                    if (str.length != size) {
-                        System.out.println("Erreur : ligne incorrecte dans la configuration finale.");
-                        continue;
-                    }
                     for (int j = 0; j < size; j++) {
                         plateauFinal[i - size - 1][j] = Integer.parseInt(str[j]);
                     }
@@ -136,15 +193,6 @@ class Plateau {
         } catch (NumberFormatException e) {
             System.out.println("Erreur de format dans le fichier : " + e.getMessage());
         }
-    }
-
-    public int nombreDepossibilites(){
-        int res = 0;
-        if(peutAllerAGauche()) res++;
-        if(peutAllerADroite()) res++;
-        if(peutAllerEnBas()) res++;
-        if(peutAllerEnHaut()) res++;
-        return res;
     }
 
     public static void main(String[] args) {
