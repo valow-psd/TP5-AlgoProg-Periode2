@@ -9,27 +9,30 @@ class TaquinSolveur {
             int[] tab = { 0, 0 };
             return tab;
         }
-        int noueds_a_par = 0;// Nombre de noeuds explorés (a changer)
-        for (int i = 0; i < 4; i++) {
-            switch (i) {
-                case 0:
-                    p.dBas();
-                    int[] tab = { SolRec(p)[0] + 1, SolRec(p)[1] + noueds_a_par };
-                    return tab;
-                case 1:
-                    p.dHaut();
-                    int[] tab1 = { SolRec(p)[0] + 1, SolRec(p)[1] + noueds_a_par };
-                    return tab1;
-                case 2:
-                    p.dDroite();
-                    int[] tab2 = { SolRec(p)[0] + 1, SolRec(p)[1] + noueds_a_par };
-                    return tab2;
-                case 3:
-                    p.dGauche();
-                    int[] tab3 = { SolRec(p)[0] + 1, SolRec(p)[1] + noueds_a_par };
-                    return tab3;
-            }
+        int noueds_a_par = p.nombreDepossibilites();// Nombre de noeuds explorés (a changer)
+        if (p.peutAllerADroite()) {
+            p.dDroite();
+            int[] tab = { SolRec(p)[0] + 1, SolRec(p)[1] + noueds_a_par };
+            return tab;
         }
+        if (p.peutAllerEnBas()) {
+            p.dBas();
+            int[] tab = { SolRec(p)[0] + 1, SolRec(p)[1] + noueds_a_par };
+            return tab;
+        }
+
+        if (p.peutAllerAGauche()) {
+            p.dGauche();
+            int[] tab = { SolRec(p)[0] + 1, SolRec(p)[1] + noueds_a_par };
+            return tab;
+        }
+        if (p.peutAllerEnHaut()) {
+            p.dHaut();
+            int[] tab = { SolRec(p)[0] + 1, SolRec(p)[1] + noueds_a_par };
+            return tab;
+        }
+        int[] tab = { 0, 0 };
+        return tab;
 
   }
 }
