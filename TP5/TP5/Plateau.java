@@ -138,7 +138,7 @@ class Plateau {
         }
     }
 
-    public  int nombreDepossibilites{
+    public int nombreDepossibilites(){
         int res = 0;
         if(peutAllerAGauche()) res++;
         if(peutAllerADroite()) res++;
