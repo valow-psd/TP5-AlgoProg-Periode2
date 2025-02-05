@@ -37,12 +37,6 @@ class Plateau {
         }
     }
 
-
-    boolean estResolu() {
-        return Arrays.deepEquals(this.plateauActuel, this.plateauFinal);
-    }
-
-
     // Lire fichier dans ./Taquin_tests
     public void lireFichier(String fichier) {
         try {
@@ -50,18 +44,28 @@ class Plateau {
             Scanner myReader = new Scanner(myObj);
             int i = 0;
             while (myReader.hasNextLine()) {
-                String data = myReader.nextLine();
+                String data = myReader.nextLine().trim();
+                if (data.isEmpty()) continue; // Ignorer les lignes vides
+
                 if (i == 0) {
                     size = Integer.parseInt(data);
                     plateauInitial = new int[size][size];
                     plateauFinal = new int[size][size];
                 } else if (i <= size) {
                     String[] str = data.split(" ");
+                    if (str.length != size) {
+                        System.out.println("Erreur : ligne incorrecte dans la configuration initiale.");
+                        continue;
+                    }
                     for (int j = 0; j < size; j++) {
                         plateauInitial[i - 1][j] = Integer.parseInt(str[j]);
                     }
                 } else {
                     String[] str = data.split(" ");
+                    if (str.length != size) {
+                        System.out.println("Erreur : ligne incorrecte dans la configuration finale.");
+                        continue;
+                    }
                     for (int j = 0; j < size; j++) {
                         plateauFinal[i - size - 1][j] = Integer.parseInt(str[j]);
                     }
@@ -72,6 +76,8 @@ class Plateau {
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
+        } catch (NumberFormatException e) {
+            System.out.println("Erreur de format dans le fichier : " + e.getMessage());
         }
     }
 
