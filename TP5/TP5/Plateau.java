@@ -8,9 +8,16 @@ class Plateau {
     private int[][] plateauFinal;
     private List<Integer> seqMin = new ArrayList<>();
     private int x0, y0, size;
-    List<Integer> possibilites = new ArrayList<>();
+    
 
-
+    public Plateau(Plateau p) {
+        this.plateauInitial = p.plateauInitial;
+        this.plateauActuel = p.plateauActuel;
+        this.plateauFinal = p.plateauFinal;
+        this.x0 = p.x0;
+        this.y0 = p.y0;
+        this.size = p.size;
+    }
     public Plateau(String fichier) {
         lireFichier(fichier);
         this.plateauActuel = plateauInitial;
@@ -24,6 +31,18 @@ class Plateau {
         }
     }
 
+    public boolean equals(Plateau p) {
+        for (int i = 0; i < this.plateauActuel.length; i++) {
+            for (int j = 0; j < this.plateauActuel[i].length; j++) {
+                if (this.plateauActuel[i][j] != p.plateauActuel[i][j])
+                    return false;
+            }
+        }
+        return true;
+    }
+    public void copierDepuis(int[][] plateauActuel) {
+        this.plateauActuel = plateauActuel;
+    }
     public void affichePlateau() {
         int[][] plateau = plateauActuel;
         for (int i = 0; i < size; i++) {
