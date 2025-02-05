@@ -1,103 +1,122 @@
 import java.util.*;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Scanner;
 
 class TaquinSolveur {
-    public int[] SolRec(Plateau p, List<Plateau> dejaVisites) {
-        /* BUT DE LA METHODE ?? */
+    public boolean SolRec(Plateau initial) {
+        boolean trouve = false;
+        int i = 0;
+        List<Plateau> sequence = null;
+        int[] appels = { 0 };
+        long debut = System.currentTimeMillis();
+        // On essaie avec un nombre de coups croissant jusqu'à une limite
+        while (!trouve && i <= 100000) {
+            appels[0] = 0;
+            sequence = new ArrayList<>();
+            // On utilise un HashSet pour éviter les cycles sur le chemin
+            trouve = existeSolution(initial, i, new HashSet<>(), sequence,appels);
+            i++;
+            
+        }
+
+        if (trouve) {
+            long fin = System.currentTimeMillis();
+            long delta = fin - debut;
+            try (FileWriter writer = new FileWriter("resultat.txt", true)) {
+                writer.write("Solution trouvée en " + (sequence.size() - 1) + " coups :\n");
+                writer.write("Nombre d'appels recursive effectué : " + appels[0] + "\n");
+                writer.write("Temps ecoulé : " + delta + "ms\n");
+                int etape = 0;
+                for (Plateau p : sequence) {
+                    ecrireEtape(writer, p, etape);
+                    etape++;
+                }
+                
+                writer.write("=============================\n");
+            } catch (IOException e) {
+                System.out.println("Erreur lors de l'écriture du fichier de solution.");
+                e.printStackTrace();
+            }
+        }
+        return trouve;
     }
-
-    public int[] SolRec(Plateau p) {// Renvoie un tableau de 2 entiers, le premier est le nombre de mouvements, le deuxième est le nombre de noeuds explorés
-        if (p.estResolu()) {
-            p.affichePlateau();
-            return new int[]{0, 0};
+    
+    private boolean existeSolution(Plateau p, int moves, Set<Plateau> visited, List<Plateau> sequence,int[] appels) {
+        if (moves == 0) {
+            if (p.estResolu()) {
+                sequence.add(p);
+                return true;
+            }
+            return false;
         }
 
-        // Vérifier si l'état actuel a déjà été visité
-        for (Plateau plat : dejaVisites) {
-            if (plat.equals(p)) {
-                return new int[]{Integer.MAX_VALUE, Integer.MAX_VALUE};
+        visited.add(p);
+
+        // Pour chaque mouvement possible, on crée une copie, on effectue le mouvement
+        // et on effectue la recherche en un nombre de move limité
+
+      
+        if (p.peutAllerADroite()) {
+            Plateau pRight = new Plateau(p);
+            pRight.dDroite();
+            appels[0]++;
+            if (!visited.contains(pRight)) {
+                List<Plateau> seqLocal = new ArrayList<>();
+                if (existeSolution(pRight, moves - 1, visited, seqLocal,appels)) {
+                    sequence.add(p); 
+                    sequence.addAll(seqLocal); 
+                    return true;
+                }
             }
         }
 
-        int noueds_a_par = p.nombreDepossibilites();
-
-        int[] tab1 = {Integer.MAX_VALUE, Integer.MAX_VALUE};
-        int[] tab2 = {Integer.MAX_VALUE, Integer.MAX_VALUE};
-        int[] tab3 = {Integer.MAX_VALUE, Integer.MAX_VALUE};
-        int[] tab4 = {Integer.MAX_VALUE, Integer.MAX_VALUE};
-
-        Plateau meilleurPlateau = null;
-
-        List<Plateau> cDejaVisites = new ArrayList<>(dejaVisites);
-        cDejaVisites.add(p);
-
-        Plateau p1 = null, p2 = null, p3 = null, p4 = null;
-
-        for (int i = 0; i < 4; i++) {
-            int[] res = {Integer.MAX_VALUE, Integer.MAX_VALUE};
-
-            switch (i) {
-                case 0:
-                    if (p.peutAllerADroite()) {
-                        p1 = new Plateau(p);
-                        p1.dDroite();
-                        res = SolRec(p1, cDejaVisites);
-                        tab1[0] = res[0] + 1;
-                        tab1[1] = res[1] + noueds_a_par;
-                    }
-                    break;
-                case 1:
-                    if (p.peutAllerEnBas()) {
-                        p2 = new Plateau(p);
-                        p2.dBas();
-                        res = SolRec(p2, cDejaVisites);
-                        tab2[0] = res[0] + 1;
-                        tab2[1] = res[1] + noueds_a_par;
-                    }
-                    break;
-                case 2:
-                    if (p.peutAllerAGauche()) {
-                        p3 = new Plateau(p);
-                        p3.dGauche();
-                        res = SolRec(p3, cDejaVisites);
-                        tab3[0] = res[0] + 1;
-                        tab3[1] = res[1] + noueds_a_par;
-                    }
-                    break;
-                case 3:
-                    if (p.peutAllerEnHaut()) {
-                        p4 = new Plateau(p);
-                        p4.dHaut();
-                        res = SolRec(p4, cDejaVisites);
-                        tab4[0] = res[0] + 1;
-                        tab4[1] = res[1] + noueds_a_par;
-                    }
-                    break;
+        
+        if (p.peutAllerEnBas()) {
+            Plateau pDown = new Plateau(p);
+            pDown.dBas();
+            if (!visited.contains(pDown)) {
+                appels[0]++;
+                List<Plateau> seqLocal = new ArrayList<>();
+                if (existeSolution(pDown, moves - 1, visited, seqLocal,appels)) {
+                    sequence.add(p);
+                    sequence.addAll(seqLocal);
+                    return true;
+                }
             }
         }
 
-        // Trouver le minimum en fonction du nombre de mouvements
-        int[][] options = {tab1, tab2, tab3, tab4};
-        Plateau[] plateaux = {p1, p2, p3, p4};
-
-        int[] minTab = options[0];
-        meilleurPlateau = plateaux[0];
-
-        for (int i = 1; i < 4; i++) {
-            if (options[i][0] < minTab[0]) {
-                minTab = options[i];
-                meilleurPlateau = plateaux[i];
+        
+        if (p.peutAllerAGauche()) {
+            Plateau pLeft = new Plateau(p);
+            pLeft.dGauche();
+            if (!visited.contains(pLeft)) {
+                appels[0]++;;
+                List<Plateau> seqLocal = new ArrayList<>();
+                if (existeSolution(pLeft, moves - 1, visited, seqLocal,appels)) {
+                    sequence.add(p);
+                    sequence.addAll(seqLocal);
+                    return true;
+                }
             }
         }
 
-        // Si un meilleur plateau a été trouvé, on applique la transformation sur `p`
-        if (meilleurPlateau != null) {
-            p.copierDepuis(meilleurPlateau.plateauActuel); // Il faut implémenter cette méthode dans Plateau
+        if (p.peutAllerEnHaut()) {
+            Plateau pUp = new Plateau(p);
+            pUp.dHaut();
+            appels[0]++;;
+            if (!visited.contains(pUp)) {
+                List<Plateau> seqLocal = new ArrayList<>();
+                if (existeSolution(pUp, moves - 1, visited, seqLocal,appels)) {
+                    sequence.add(p);
+                    sequence.addAll(seqLocal);
+                    
+                    return true;
+                }
+            }
         }
 
-        return minTab;
+        visited.remove(p);
+        return false;
     }
 
 
@@ -244,22 +263,27 @@ class TaquinSolveur {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        String cheminFichier = "Taquin_tests/sp000.txt";
+        String cheminFichier = "Taquin_tests/sp0400.txt";
 
         Plateau plateau = new Plateau(cheminFichier);
         System.out.println("Chargement du plateau...");
         System.out.println("Plateau initial");
         plateau.affichePlateau();
-
-
+        boolean methode = false; // Changer en True si on veut utiliser les methode solSE, profondeurDabord et largeurDabord
         TaquinSolveur solveur = new TaquinSolveur();
         System.out.println("Résolution en cours...");
         /*Différentes méthodes de résolution*/
-        solveur.solSE(plateau);
-        solveur.profondeurDAbord(plateau);
-        solveur.largeurDAbord(plateau);
-
-        System.out.println("Résultats comparés dans resultat.txt");
+        if (methode) {
+            solveur.solSE(plateau);
+            solveur.profondeurDAbord(plateau);
+            solveur.largeurDAbord(plateau);
+            System.out.println("Résultats comparés dans resultat.txt");
+        }
+        else {
+            solveur.SolRec(plateau);
+            System.out.println("Résultats dans resultat.txt");
+        }
+        
         scanner.close();
     }
 }
