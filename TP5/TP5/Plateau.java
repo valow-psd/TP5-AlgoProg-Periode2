@@ -9,6 +9,7 @@ class Plateau {
     private List<Integer> seqMin = new ArrayList<>();
     private int x0, y0, size;
 
+
     public Plateau(String fichier) {
         lireFichier(fichier);
         this.plateauActuel = plateauInitial;
@@ -67,6 +68,28 @@ class Plateau {
             plateauActuel[x0][y0 - 1] = 0;
             y0--;
         }
+    }
+    public void dDroite(){
+        if (y0 < size - 1) {
+            plateauActuel[x0][y0] = plateauActuel[x0][y0 +1];
+            plateauActuel[x0][y0 + 1] = 0;
+            y0++;
+        }
+    }
+
+    public boolean peutAllerEnHaut(){
+        return x0>0;
+    }
+
+    public boolean peutAllerEnBas(){
+        return x0<size -1;
+    }
+
+    public boolean peutAllerADroite(){
+        return y0>0;
+    }
+    public boolean peutAllerADroite(){
+        return y0<size -1;
     }
 
     public void dDroite(){
