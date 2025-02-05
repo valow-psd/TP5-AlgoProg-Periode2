@@ -85,7 +85,7 @@ class Plateau {
         return x0<size -1;
     }
 
-    public boolean peutAllerADroite(){
+    public boolean peutAllerAGauche(){
         return y0>0;
     }
     public boolean peutAllerADroite(){
