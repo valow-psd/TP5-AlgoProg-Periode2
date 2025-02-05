@@ -37,6 +37,12 @@ class Plateau {
         }
     }
 
+
+    boolean estResolu() {
+        return Arrays.deepEquals(this.plateauActuel, this.plateauFinal);
+    }
+
+
     // Lire fichier dans ./Taquin_tests
     public void lireFichier(String fichier) {
         try {
