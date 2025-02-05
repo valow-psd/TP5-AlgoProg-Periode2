@@ -37,6 +37,18 @@ class Plateau {
         }
     }
 
+    boolean estResolu() {
+        for (int i = 0; i < this.plateauActuel.length; i++) {
+            for (int j = 0; j < this.plateauActuel[i].length; j++) {
+                if (this.plateauActuel[i][j] != this.plateauFinal[i][j])
+                    return false; 
+            }
+        }
+        return true;
+
+    }
+
+
     // Lire fichier dans ./Taquin_tests
     public void lireFichier(String fichier) {
         try {
