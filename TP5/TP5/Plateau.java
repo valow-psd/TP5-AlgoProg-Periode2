@@ -48,6 +48,13 @@ class Plateau {
 
     }
 
+    public void dBas(){
+        if (x0 < size - 1) {
+            plateauActuel[x0][y0] = plateauActuel[x0 + 1][y0];
+            plateauActuel[x0 + 1][y0] = 0;
+            x0++;
+        }
+    }
 
     // Lire fichier dans ./Taquin_tests
     public void lireFichier(String fichier) {
