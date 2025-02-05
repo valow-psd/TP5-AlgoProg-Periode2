@@ -23,7 +23,7 @@ class Plateau {
         }
     }
 
-    private void affichePlateau() {
+    public void affichePlateau() {
         int[][] plateau = plateauActuel;
         for (int i = 0; i < size; i++) {
             System.out.print("|");
