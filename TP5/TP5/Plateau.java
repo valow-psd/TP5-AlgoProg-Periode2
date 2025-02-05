@@ -8,6 +8,7 @@ class Plateau {
     private int[][] plateauFinal;
     private List<Integer> seqMin = new ArrayList<>();
     private int x0, y0, size;
+    List<Integer> possibilites = new ArrayList<>();
 
 
     public Plateau(String fichier) {
@@ -135,6 +136,15 @@ class Plateau {
         } catch (NumberFormatException e) {
             System.out.println("Erreur de format dans le fichier : " + e.getMessage());
         }
+    }
+
+    public  int nombreDepossibilites{
+        int res = 0;
+        if(peutAllerAGauche()) res++;
+        if(peutAllerADroite()) res++;
+        if(peutAllerEnBas()) res++;
+        if(peutAllerEnHaut()) res++;
+        return res;
     }
 
     public static void main(String[] args) {
