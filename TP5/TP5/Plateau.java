@@ -47,12 +47,33 @@ class Plateau {
         return true;
 
     }
-
+    public void dHaut(){
+        if (x0 > 0) {
+            plateauActuel[x0][y0] = plateauActuel[x0 - 1][y0];
+            plateauActuel[x0 - 1][y0] = 0;
+            x0--;
+        }
+    }
     public void dBas(){
         if (x0 < size - 1) {
             plateauActuel[x0][y0] = plateauActuel[x0 + 1][y0];
             plateauActuel[x0 + 1][y0] = 0;
             x0++;
+        }
+    }
+    public void dGauche(){
+        if (y0 > 0) {
+            plateauActuel[x0][y0] = plateauActuel[x0][y0 -1];
+            plateauActuel[x0][y0 - 1] = 0;
+            y0--;
+        }
+    }
+
+    public void dDroite(){
+        if (y0 < size - 1) {
+            plateauActuel[x0][y0] = plateauActuel[x0][y0 + 1];
+            plateauActuel[x0][y0 + 1] = 0;
+            y0++;
         }
     }
 
