@@ -24,7 +24,7 @@ class Plateau {
     }
 
     private void affichePlateau() {
-        int [][] plateau = plateauActuel;
+        int[][] plateau = plateauActuel;
         for (int i = 0; i < size; i++) {
             System.out.print("|");
             for (int j = 0; j < size; j++) {
@@ -36,6 +36,10 @@ class Plateau {
             }
             System.out.println("|");
         }
+    }
+
+    boolean estResolu() {
+        return Arrays.deepEquals(this.plateauActuel, this.plateauFinal);
     }
 }
 
