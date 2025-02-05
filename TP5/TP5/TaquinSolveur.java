@@ -1,10 +1,8 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-// Solveur du jeu du Taquin
 class TaquinSolveur {
 
     public int[] SolRec(Plateau p) {// Renvoie un tableau de 2 entiers, le premier est le nombre de mouvements, le deuxième est le nombre de noeuds explorés
@@ -39,6 +37,7 @@ class TaquinSolveur {
         return tab;
 
     }
+
     public void solSE(Plateau p) {
         long debut = System.currentTimeMillis();
         Tas tas = new Tas();
@@ -46,36 +45,26 @@ class TaquinSolveur {
 
         int noeudsExplores = 0;
 
-        while (!tas.estVide()) {
-            Plateau courant = tas.extraire();
-            noeudsExplores++;
+        try (FileWriter writer = new FileWriter("resultat.txt", true)) {
+            writer.write("Méthode : Meilleur d'abord\n");
 
-            if (courant.estResolu()) {
-                long fin = System.currentTimeMillis();
-                long tempsCalcul = fin - debut;
-                ecrireResultat(tempsCalcul, noeudsExplores, courant);
-                return;
-            }
+            while (!tas.estVide()) {
+                Plateau courant = tas.extraire();
+                noeudsExplores++;
 
-            List<Plateau> enfants = courant.genererEnfants();
-            for (Plateau enfant : enfants) {
-                tas.ajouter(enfant);
-            }
-        }
-    }
+                ecrireEtape(writer, courant, noeudsExplores);
 
-    // Méthode pour écrire les résultats dans un fichier
-    private void ecrireResultat(long tempsCalcul, int noeudsExplores, Plateau p) {
-        try (FileWriter writer = new FileWriter("resultat.txt")) {
-            writer.write("Résultat trouvé en " + tempsCalcul + " ms\n");
-            writer.write("Nombre de noeuds explorés : " + noeudsExplores + "\n");
-            writer.write("Configuration finale :\n");
-            int[][] plateau = p.getPlateauActuel();
-            for (int[] ligne : plateau) {
-                for (int val : ligne) {
-                    writer.write(val + " ");
+                if (courant.estResolu()) {
+                    long fin = System.currentTimeMillis();
+                    long tempsCalcul = fin - debut;
+                    ecrireResultat(writer, tempsCalcul, noeudsExplores, courant);
+                    return;
                 }
-                writer.write("\n");
+
+                List<Plateau> enfants = courant.genererEnfants();
+                for (Plateau enfant : enfants) {
+                    tas.ajouter(enfant);
+                }
             }
         } catch (IOException e) {
             System.out.println("Erreur lors de l'écriture du fichier de résultat.");
@@ -83,37 +72,119 @@ class TaquinSolveur {
         }
     }
 
-    private static void fauxChargement(String texte) {
-        String baseMessage = texte;
-        for (int i = 0; i < 5; i++) { // 5 secondes environ
-            try {
-                System.out.print("\r" + baseMessage);
-                for (int j = 0; j <= (i % 3); j++) {
-                    System.out.print(".");
+    public void profondeurDAbord(Plateau p) {
+        long debut = System.currentTimeMillis();
+        Tas tas = new Tas();
+        tas.ajouter(p);
+
+        int noeudsExplores = 0;
+
+        try (FileWriter writer = new FileWriter("resultat.txt", true)) {
+            writer.write("Méthode : Profondeur d'abord\n");
+
+            while (!tas.estVide()) {
+                Plateau courant = tas.extraire();
+                noeudsExplores++;
+
+                ecrireEtape(writer, courant, noeudsExplores);
+
+                if (courant.estResolu()) {
+                    long fin = System.currentTimeMillis();
+                    long tempsCalcul = fin - debut;
+                    ecrireResultat(writer, tempsCalcul, noeudsExplores, courant);
+                    return;
                 }
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                System.out.println("Le chargement a été interrompu.");
+
+                List<Plateau> enfants = courant.genererEnfants();
+                for (int i = enfants.size() - 1; i >= 0; i--) {
+                    tas.ajouter(enfants.get(i));
+                }
             }
+        } catch (IOException e) {
+            System.out.println("Erreur lors de l'écriture du fichier de résultat.");
+            e.printStackTrace();
         }
-        System.out.println();
     }
 
+    public void largeurDAbord(Plateau p) {
+        long debut = System.currentTimeMillis();
+        Tas tas = new Tas();
+        tas.ajouter(p);
+
+        int noeudsExplores = 0;
+
+        try (FileWriter writer = new FileWriter("resultat.txt", true)) {
+            writer.write("Méthode : Largeur d'abord\n");
+
+            while (!tas.estVide()) {
+                Plateau courant = tas.extraire();
+                noeudsExplores++;
+
+                ecrireEtape(writer, courant, noeudsExplores);
+
+                if (courant.estResolu()) {
+                    long fin = System.currentTimeMillis();
+                    long tempsCalcul = fin - debut;
+                    ecrireResultat(writer, tempsCalcul, noeudsExplores, courant);
+                    return;
+                }
+
+                List<Plateau> enfants = courant.genererEnfants();
+                for (Plateau enfant : enfants) {
+                    tas.ajouter(enfant);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Erreur lors de l'écriture du fichier de résultat.");
+            e.printStackTrace();
+        }
+    }
+
+    // ecriture etape par etape dans le fichier
+    private void ecrireEtape(FileWriter writer, Plateau p, int etape) throws IOException {
+        writer.write("Étape " + etape + ":\n");
+        int[][] plateau = p.getPlateauActuel();
+        for (int[] ligne : plateau) {
+            for (int val : ligne) {
+                writer.write(val + " ");
+            }
+            writer.write("\n");
+        }
+        writer.write("-----------------------------\n");
+    }
+
+    // ecriture des résultats dans un fichier
+    private void ecrireResultat(FileWriter writer, long tempsCalcul, int noeudsExplores, Plateau p) throws IOException {
+        writer.write("Résultat trouvé en " + tempsCalcul + " ms\n");
+        writer.write("Nombre de noeuds explorés : " + noeudsExplores + "\n");
+        writer.write("Configuration finale : \n");
+        int[][] plateau = p.getPlateauActuel();
+        for (int[] ligne : plateau) {
+            for (int val : ligne) {
+                writer.write(val + " ");
+            }
+            writer.write("\n");
+        }
+        writer.write("=============================\n");
+    }
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        fauxChargement("Chargement en cours");
         String cheminFichier = "Taquin_tests/sp000.txt";
 
         Plateau plateau = new Plateau(cheminFichier);
-        System.out.println("Plateau initial :");
+        System.out.println("Chargement du plateau...");
+        System.out.println("Plateau initial");
         plateau.affichePlateau();
 
-        TaquinSolveur solveur = new TaquinSolveur();
-        fauxChargement("Résolution en cours");
-        solveur.solSE(plateau);
 
-        System.out.println("Résultat écrit dans resultat.txt");
+        TaquinSolveur solveur = new TaquinSolveur();
+        System.out.println("Résolution en cours...");
+        /*Différentes méthodes de résolution*/
+        solveur.solSE(plateau);
+        solveur.profondeurDAbord(plateau);
+        solveur.largeurDAbord(plateau);
+
+        System.out.println("Résultats comparés dans resultat.txt");
         scanner.close();
     }
 }

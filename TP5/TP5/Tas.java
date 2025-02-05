@@ -1,6 +1,4 @@
 import java.util.*;
-import java.io.FileWriter;
-import java.io.IOException;
 
 class Tas {
     private List<Plateau> elements = new ArrayList<>();
