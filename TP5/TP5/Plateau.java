@@ -92,13 +92,6 @@ class Plateau {
         return y0<size -1;
     }
 
-    public void dDroite(){
-        if (y0 < size - 1) {
-            plateauActuel[x0][y0] = plateauActuel[x0][y0 + 1];
-            plateauActuel[x0][y0 + 1] = 0;
-            y0++;
-        }
-    }
 
     // Lire fichier dans ./Taquin_tests
     public void lireFichier(String fichier) {
