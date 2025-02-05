@@ -204,6 +204,7 @@ class Plateau {
             File myObj = new File(fichier);
             Scanner myReader = new Scanner(myObj);
             int i = 0;
+
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine().trim();
                 if (data.isEmpty()) continue;
@@ -213,12 +214,18 @@ class Plateau {
                     plateauInitial = new int[size][size];
                     plateauFinal = new int[size][size];
                 } else if (i <= size) {
-                    String[] str = data.split(" ");
+                    String[] str = data.trim().split("\\s+"); // Gestion des espaces multiples
+                    if (str.length != size) {
+                        throw new IllegalArgumentException("Erreur : ligne incorrecte dans la configuration initiale.");
+                    }
                     for (int j = 0; j < size; j++) {
                         plateauInitial[i - 1][j] = Integer.parseInt(str[j]);
                     }
                 } else {
-                    String[] str = data.split(" ");
+                    String[] str = data.trim().split("\\s+"); // Gestion des espaces multiples
+                    if (str.length != size) {
+                        throw new IllegalArgumentException("Erreur : ligne incorrecte dans la configuration finale.");
+                    }
                     for (int j = 0; j < size; j++) {
                         plateauFinal[i - size - 1][j] = Integer.parseInt(str[j]);
                     }
@@ -227,15 +234,19 @@ class Plateau {
             }
             myReader.close();
         } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
+            System.out.println("Erreur : fichier non trouvé.");
             e.printStackTrace();
         } catch (NumberFormatException e) {
             System.out.println("Erreur de format dans le fichier : " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
         }
     }
 
+
     public static void main(String[] args) {
-        Plateau plateau = new Plateau("Taquin_tests/sp000.txt");
+        Plateau plateau = new Plateau("Taquin_tests/sp002.txt");
+
         plateau.affichePlateau();
     }
 }

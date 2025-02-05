@@ -7,16 +7,16 @@ class TaquinSolveur {
         boolean trouve = false;
         int i = 0;
         List<Plateau> sequence = null;
-        int[] appels = { 0 };
+        int[] appels = {0};
         long debut = System.currentTimeMillis();
         // On essaie avec un nombre de coups croissant jusqu'à une limite
         while (!trouve && i <= 100000) {
             appels[0] = 0;
             sequence = new ArrayList<>();
             // On utilise un HashSet pour éviter les cycles sur le chemin
-            trouve = existeSolution(initial, i, new HashSet<>(), sequence,appels);
+            trouve = existeSolution(initial, i, new HashSet<>(), sequence, appels);
             i++;
-            
+
         }
 
         if (trouve) {
@@ -31,7 +31,7 @@ class TaquinSolveur {
                     ecrireEtape(writer, p, etape);
                     etape++;
                 }
-                
+
                 writer.write("=============================\n");
             } catch (IOException e) {
                 System.out.println("Erreur lors de l'écriture du fichier de solution.");
@@ -40,8 +40,8 @@ class TaquinSolveur {
         }
         return trouve;
     }
-    
-    private boolean existeSolution(Plateau p, int moves, Set<Plateau> visited, List<Plateau> sequence,int[] appels) {
+
+    private boolean existeSolution(Plateau p, int moves, Set<Plateau> visited, List<Plateau> sequence, int[] appels) {
         if (moves == 0) {
             if (p.estResolu()) {
                 sequence.add(p);
@@ -55,29 +55,14 @@ class TaquinSolveur {
         // Pour chaque mouvement possible, on crée une copie, on effectue le mouvement
         // et on effectue la recherche en un nombre de move limité
 
-      
+
         if (p.peutAllerADroite()) {
             Plateau pRight = new Plateau(p);
             pRight.dDroite();
             appels[0]++;
             if (!visited.contains(pRight)) {
                 List<Plateau> seqLocal = new ArrayList<>();
-                if (existeSolution(pRight, moves - 1, visited, seqLocal,appels)) {
-                    sequence.add(p); 
-                    sequence.addAll(seqLocal); 
-                    return true;
-                }
-            }
-        }
-
-        
-        if (p.peutAllerEnBas()) {
-            Plateau pDown = new Plateau(p);
-            pDown.dBas();
-            if (!visited.contains(pDown)) {
-                appels[0]++;
-                List<Plateau> seqLocal = new ArrayList<>();
-                if (existeSolution(pDown, moves - 1, visited, seqLocal,appels)) {
+                if (existeSolution(pRight, moves - 1, visited, seqLocal, appels)) {
                     sequence.add(p);
                     sequence.addAll(seqLocal);
                     return true;
@@ -85,14 +70,30 @@ class TaquinSolveur {
             }
         }
 
-        
+
+        if (p.peutAllerEnBas()) {
+            Plateau pDown = new Plateau(p);
+            pDown.dBas();
+            if (!visited.contains(pDown)) {
+                appels[0]++;
+                List<Plateau> seqLocal = new ArrayList<>();
+                if (existeSolution(pDown, moves - 1, visited, seqLocal, appels)) {
+                    sequence.add(p);
+                    sequence.addAll(seqLocal);
+                    return true;
+                }
+            }
+        }
+
+
         if (p.peutAllerAGauche()) {
             Plateau pLeft = new Plateau(p);
             pLeft.dGauche();
             if (!visited.contains(pLeft)) {
-                appels[0]++;;
+                appels[0]++;
+                ;
                 List<Plateau> seqLocal = new ArrayList<>();
-                if (existeSolution(pLeft, moves - 1, visited, seqLocal,appels)) {
+                if (existeSolution(pLeft, moves - 1, visited, seqLocal, appels)) {
                     sequence.add(p);
                     sequence.addAll(seqLocal);
                     return true;
@@ -103,13 +104,14 @@ class TaquinSolveur {
         if (p.peutAllerEnHaut()) {
             Plateau pUp = new Plateau(p);
             pUp.dHaut();
-            appels[0]++;;
+            appels[0]++;
+            ;
             if (!visited.contains(pUp)) {
                 List<Plateau> seqLocal = new ArrayList<>();
-                if (existeSolution(pUp, moves - 1, visited, seqLocal,appels)) {
+                if (existeSolution(pUp, moves - 1, visited, seqLocal, appels)) {
                     sequence.add(p);
                     sequence.addAll(seqLocal);
-                    
+
                     return true;
                 }
             }
@@ -119,17 +121,6 @@ class TaquinSolveur {
         return false;
     }
 
-
-    /*A ENLEVER OU METTRE DANS LE MAIN PRINCIPAL*/
-   /* public static void main(String[] args) {
-        Plateau plateau = new Plateau("Taquin_tests/sp000.txt");
-        plateau.affichePlateau();
-        List<Plateau> dejaVisites = new ArrayList<>();
-        TaquinSolveur solveur = new TaquinSolveur();
-        solveur.SolRec(plateau, dejaVisites);
-        plateau.affichePlateau();
-
-    }*/
 
     public void solSE(Plateau p) {
         long debut = System.currentTimeMillis();
@@ -263,27 +254,23 @@ class TaquinSolveur {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        String cheminFichier = "Taquin_tests/sp0400.txt";
+        String cheminFichier = "Taquin_tests/sp002.txt";
 
         Plateau plateau = new Plateau(cheminFichier);
         System.out.println("Chargement du plateau...");
         System.out.println("Plateau initial");
         plateau.affichePlateau();
-        boolean methode = false; // Changer en True si on veut utiliser les methode solSE, profondeurDabord et largeurDabord
+       // boolean methode = true; // Changer en True si on veut utiliser les methode solSE, profondeurDabord et largeurDabord
         TaquinSolveur solveur = new TaquinSolveur();
         System.out.println("Résolution en cours...");
-        /*Différentes méthodes de résolution*/
-        if (methode) {
-            solveur.solSE(plateau);
-            solveur.profondeurDAbord(plateau);
-            solveur.largeurDAbord(plateau);
-            System.out.println("Résultats comparés dans resultat.txt");
-        }
-        else {
-            solveur.SolRec(plateau);
-            System.out.println("Résultats dans resultat.txt");
-        }
-        
+        // choix de la méthode
+        solveur.SolRec(plateau);
+        solveur.solSE(plateau);
+        solveur.profondeurDAbord(plateau);
+        solveur.largeurDAbord(plateau);
+        System.out.println("Résultats comparés dans resultat.txt");
+
+
         scanner.close();
     }
 }
