@@ -1,6 +1,7 @@
 import java.util.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+
 class Plateau {
     private int[][] plateauInitial;
     private int[][] plateauActuel;
@@ -39,7 +40,13 @@ class Plateau {
     }
 
     boolean estResolu() {
-        return Arrays.deepEquals(this.plateauActuel, this.plateauFinal);
+        for (int i = 0; i < this.plateauActuel.length; i++) {
+            for (int j = 0; j < this.plateauActuel[i].length; j++) {
+                if (this.plateauActuel[i][j] != this.plateauFinal[i][j])
+                    return false; 
+            }
+        }
+        return true;
+
     }
 }
-
